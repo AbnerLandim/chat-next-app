@@ -3,14 +3,20 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { io as ClientIO } from "socket.io-client";
 
+import useSessionStorage from "@/hooks/useSessionStorage";
+
 type SocketContextType = {
   socket: any | null;
   isConnected: boolean;
+  room: string;
+  setRoom: any;
 };
 
 const SocketContext = createContext<SocketContextType>({
   socket: null,
   isConnected: false,
+  room: "default",
+  setRoom: () => {},
 });
 
 export const useSocket = () => {
@@ -18,8 +24,10 @@ export const useSocket = () => {
 };
 
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
-  const [socket, setSocket] = useState(null);
+  const [socket, setSocket] = useState<any>(null);
+  const [room, setRoom] = useState("");
   const [isConnected, setIsConnected] = useState(false);
+  const { setValue } = useSessionStorage();
 
   useEffect(() => {
     const socketInstance = new (ClientIO as any)(
@@ -27,6 +35,9 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       {
         path: "/api/socket/io",
         addTrailingSlash: false,
+        query: {
+          roomId: room,
+        },
       }
     );
 
@@ -48,6 +59,15 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       console.log("Connected to socketInstance server");
     });
 
+    socketInstance.on("message", (data: any) => {
+      setValue(Date.now().toString(), data);
+      window.dispatchEvent(new Event("sessionStorage"));
+    });
+
+    socketInstance.on("joined", (clientId: string) => {
+      if (socket?.id !== clientId) alert(`${clientId} joined`);
+    });
+
     socketInstance.on("disconnect", () => {
       setIsConnected(false);
       console.log("Disconnected from socketInstance server");
@@ -61,7 +81,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <SocketContext.Provider value={{ socket, isConnected }}>
+    <SocketContext.Provider value={{ socket, isConnected, room, setRoom }}>
       {children}
     </SocketContext.Provider>
   );

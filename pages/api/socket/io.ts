@@ -27,11 +27,19 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
   });
 
   io.on("connection", (socket) => {
+    const roomId: string = socket.handshake.query?.roomId as string;
     const clientId = socket.id;
-    console.log(`client connected. ID: ${clientId}`);
+    console.log(`Room: ${roomId} => client connected. ID: ${clientId}`);
+    socket.broadcast.emit("joined", clientId);
 
     socket.on("message", (data) => {
-      console.log(`Received message From Client ${socket.id}:`, data);
+      console.log(`Room: ${roomId} => Client ${socket.id} said:`, data);
+      io.emit("message", data);
+    });
+
+    socket.on(roomId, (data) => {
+      console.log(`Room: ${roomId} => Client ${socket.id} said:`, data);
+      io.emit(roomId, data);
     });
 
     socket.on("disconnect", () => {
