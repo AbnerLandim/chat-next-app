@@ -27,7 +27,7 @@ function Room({ params }: { params: { roomId: string } }) {
     return () => {
       window.removeEventListener("sessionStorage", () => {});
     };
-  }, []);
+  }, [clearAllValues, getAllValues]);
 
   function handleSendMessage(e: any) {
     e.preventDefault();
@@ -59,7 +59,7 @@ function Room({ params }: { params: { roomId: string } }) {
         {/* chat messages */}
         <div className="p-2 overflow-scroll">
           {messages
-            .sort((a: any, b: any) => a.key - b.key)
+            .sort((a, b) => Number(a.key) - Number(b.key))
             .map((each) => {
               const [senderId, messageContent] = each.value.split(":");
               const formattedDate = new Intl.DateTimeFormat("en-US", {
