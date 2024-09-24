@@ -2,11 +2,13 @@
 import { useRef, useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationArrow } from "@fortawesome/free-solid-svg-icons";
+
 import { useSocket } from "@/components/providers/socket-provider";
 import useSessionStorage from "@/hooks/useSessionStorage";
+import { hexEncode, invertHex } from "@/app/helpers";
 
 function Room({ params }: { params: { roomId: string } }) {
-  const { isConnected, socket } = useSocket();
+  const { isConnected, socket, room } = useSocket();
   const [messages, setMessages] = useState<{ key: string; value: string }[]>(
     []
   );
@@ -34,7 +36,7 @@ function Room({ params }: { params: { roomId: string } }) {
     e.preventDefault();
     const messageValue: string = inputRef.current?.value as string;
     if (messageValue?.length > 0) {
-      socket.emit("message", `${socket.id}:${messageValue}`);
+      socket.emit(room, `${socket.id}:${messageValue}`);
       formRef.current?.reset();
     }
   }
@@ -56,7 +58,7 @@ function Room({ params }: { params: { roomId: string } }) {
           </div>
         </div>
       </section>
-      <section className="grid grid-rows-[_1fr_40px] w-full mx-auto rounded-lg md:max-h-[90%] bg-slate-300 sm:pb-20 md:pb-0">
+      <section className="grid grid-rows-[_1fr_40px] w-full mx-auto rounded-lg md:max-h-[70%] bg-slate-300 sm:pb-20 md:pb-0">
         {/* chat messages */}
         <div className="p-2 overflow-scroll">
           {messages
@@ -67,23 +69,33 @@ function Room({ params }: { params: { roomId: string } }) {
                 timeStyle: "medium",
                 dateStyle: "short",
               }).format(new Date(Number(each.key)));
+              const messageColor = `#${hexEncode(senderId)}`;
+              const messageTextColor = invertHex(messageColor);
               return (
                 <div
                   className={`${
                     senderId === socket?.id ? "ml-auto" : ""
-                  } w-9/12 ${
-                    senderId === socket?.id ? "bg-emerald-500" : "bg-teal-600"
-                  } rounded p-2 mb-2 last:mb-80`}
+                  } w-9/12 rounded p-2 mb-2 last:mb-80`}
+                  style={{ backgroundColor: `${messageColor}` }}
                   key={each.key}
                 >
                   <div className="flex flex-col gap-2">
-                    <span className="mr-auto text-slate-50 text-sm">
+                    <span
+                      className="mr-auto text-sm"
+                      style={{ color: messageTextColor }}
+                    >
                       {senderId}
                     </span>
-                    <span className="text-slate-50 break-all">
+                    <span
+                      className="break-all"
+                      style={{ color: messageTextColor }}
+                    >
                       {messageContent}
                     </span>
-                    <span className="ml-auto text-slate-50 text-sm">
+                    <span
+                      className="ml-auto text-sm"
+                      style={{ color: messageTextColor }}
+                    >
                       {formattedDate}
                     </span>
                   </div>

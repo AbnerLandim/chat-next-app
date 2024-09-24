@@ -24,10 +24,23 @@ export const useSocket = () => {
 };
 
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
+  const getRoomId = () => {
+    if (
+      typeof window !== "undefined" &&
+      window?.location?.pathname?.includes("/room/")
+    )
+      return window.location.pathname.replace("/room/", "");
+    return "";
+  };
+
   const [socket, setSocket] = useState<any>(null);
-  const [room, setRoom] = useState("");
+  const [room, setRoom] = useState(getRoomId());
   const [isConnected, setIsConnected] = useState(false);
   const { setValue } = useSessionStorage();
+
+  useEffect(() => {
+    setRoom(getRoomId());
+  });
 
   useEffect(() => {
     const socketInstance = new (ClientIO as any)(
@@ -36,7 +49,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         path: "/api/socket/io",
         addTrailingSlash: false,
         query: {
-          roomId: room,
+          roomId: room, //not used for the moment
         },
       }
     );
@@ -64,8 +77,14 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       window.dispatchEvent(new Event("sessionStorage"));
     });
 
-    socketInstance.on("joined", (clientId: string) => {
-      if (socket?.id !== clientId) alert(`${clientId} joined`);
+    socketInstance.on(room, (data: any) => {
+      console.log("ABNER!!!!!");
+      setValue(Date.now().toString(), data);
+      window.dispatchEvent(new Event("sessionStorage"));
+    });
+
+    socketInstance.on(`joined:${room}}`, (clientId: string) => {
+      if (socket?.id !== clientId) alert(`${clientId} has joined`);
     });
 
     socketInstance.on("disconnect", () => {

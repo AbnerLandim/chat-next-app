@@ -3,16 +3,12 @@ import { FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 
-import { useSocket } from "@/components/providers/socket-provider";
-
 export default function Home() {
   const router = useRouter();
-  const { setRoom } = useSocket();
 
   function handleCreateRoom(e: FormEvent) {
     e.preventDefault();
     const newRoomUuid = uuidv4();
-    setRoom(newRoomUuid);
     router.push(`/room/${newRoomUuid}`);
   }
 
