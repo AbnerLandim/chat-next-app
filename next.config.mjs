@@ -6,7 +6,7 @@ import path, { dirname } from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const nextConfig = {
-  // output: "standalone",
+  output: "standalone",
   webpack: (config, { isServer }) => {
     config.resolve.alias["@"] = path.join(__dirname);
     return config;
