@@ -17,6 +17,7 @@ function Room({ params }: { params: { roomId: string } }) {
 
   useEffect(() => {
     clearAllValues();
+    inputRef.current?.focus();
 
     window.addEventListener("sessionStorage", () => {
       const allMessages = getAllValues();
@@ -27,7 +28,7 @@ function Room({ params }: { params: { roomId: string } }) {
     return () => {
       window.removeEventListener("sessionStorage", () => {});
     };
-  }, [clearAllValues, getAllValues]);
+  }, []);
 
   function handleSendMessage(e: any) {
     e.preventDefault();

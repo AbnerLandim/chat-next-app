@@ -3,7 +3,6 @@
 
 // Hook
 function useSessionStorage<T>() {
-  // Update sessionStorage when state changes
   const setValue = (key: string, value: any) => {
     try {
       const valueToStore = value instanceof Function ? value() : value;
