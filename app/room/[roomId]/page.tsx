@@ -112,7 +112,7 @@ function Room({ params }: RoomProps) {
           </div>
         </div>
       </section>
-      <section className="grid grid-rows-[_1fr_40px] w-full mx-auto rounded-lg min-h-[80vh] max-h-[80%] bg-slate-300 sm:pb-20 md:pb-0">
+      <section className="grid grid-rows-[_1fr_40px] w-full mx-auto rounded-lg min-h-[70vh] max-h-[70%] bg-slate-300 sm:pb-20 md:pb-0">
         {/* chat messages */}
         <div className="relative p-2 overflow-x-auto rounded-t-lg max-h-screen min-h-full">
           {messages
