@@ -1,13 +1,20 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
+import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationArrow } from "@fortawesome/free-solid-svg-icons";
 
 import { useSocket } from "@/components/providers/socket-provider";
 import useSessionStorage from "@/hooks/useSessionStorage";
-import { hexEncode, invertHex } from "@/app/helpers";
+import { hexEncode, invertHex, getBinaryFromFile } from "@/app/helpers";
 
-function Room({ params }: { params: { roomId: string } }) {
+type RoomProps = {
+  params: {
+    roomId: string;
+  };
+};
+
+function Room({ params }: RoomProps) {
   const { isConnected, socket, room } = useSocket();
   const [messages, setMessages] = useState<{ key: string; value: string }[]>(
     []
@@ -15,6 +22,7 @@ function Room({ params }: { params: { roomId: string } }) {
   const { getAllValues, clearAllValues } = useSessionStorage();
   const inputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
@@ -27,14 +35,45 @@ function Room({ params }: { params: { roomId: string } }) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     });
 
+    window.addEventListener("paste", (e) => {
+      const clipboardItems = e?.clipboardData?.items;
+      const items = [].slice
+        .call(clipboardItems)
+        .filter((each: any) => /^image\//.test(each.type));
+
+      if (items.length === 0) return;
+
+      const item: any = items[0];
+      const blob = item.getAsFile();
+
+      /* Leave this here for future use */
+      // const srcFromImg = URL.createObjectURL(blob);
+      const file = new File([blob], "file name", {
+        type: "image/jpeg",
+        lastModified: new Date().getTime(),
+      });
+      const container = new DataTransfer();
+      container.items.add(file);
+      const filesForInput = container.files;
+      const filesElement: any = document.querySelector("#file_input");
+      filesElement.files = filesForInput;
+    });
+
     return () => {
       window.removeEventListener("sessionStorage", () => {});
+      window.removeEventListener("paste", () => {});
     };
   }, []);
 
-  function handleSendMessage(e: any) {
+  async function handleSendMessage(e: any) {
     e.preventDefault();
     const messageValue: string = inputRef.current?.value as string;
+    if (!!fileInputRef?.current?.files?.length) {
+      const binary = await getBinaryFromFile(fileInputRef.current?.files?.[0]);
+      socket.emit(`${room}:img`, [binary, socket.id]);
+      formRef.current?.reset();
+      return;
+    }
     if (messageValue?.length > 0) {
       socket.emit(room, `${socket.id}:${messageValue}`);
       formRef.current?.reset();
@@ -60,11 +99,13 @@ function Room({ params }: { params: { roomId: string } }) {
       </section>
       <section className="grid grid-rows-[_1fr_40px] w-full mx-auto rounded-lg md:max-h-[70%] bg-slate-300 sm:pb-20 md:pb-0">
         {/* chat messages */}
-        <div className="p-2 overflow-scroll">
+        <div className="p-2 overflow-scroll rounded-t-lg">
           {messages
             .sort((a, b) => Number(a.key) - Number(b.key))
             .map((each) => {
-              const [senderId, messageContent] = each.value.split(":");
+              const [senderId, messageContent] = each.value
+                .replace(/\:/, "&")
+                .split("&");
               const formattedDate = new Intl.DateTimeFormat("en-US", {
                 timeStyle: "medium",
                 dateStyle: "short",
@@ -75,7 +116,7 @@ function Room({ params }: { params: { roomId: string } }) {
                 <div
                   className={`${
                     senderId === socket?.id ? "ml-auto" : ""
-                  } w-9/12 rounded p-2 mb-2 last:mb-80`}
+                  } w-9/12 rounded-lg p-2 mb-2 last:mb-80`}
                   style={{ backgroundColor: `${messageColor}` }}
                   key={each.key}
                 >
@@ -86,12 +127,22 @@ function Room({ params }: { params: { roomId: string } }) {
                     >
                       {senderId}
                     </span>
-                    <span
-                      className="break-all"
-                      style={{ color: messageTextColor }}
-                    >
-                      {messageContent}
-                    </span>
+                    {messageContent.includes("blob:") ? (
+                      <Image
+                        src={messageContent}
+                        alt={messageContent}
+                        className="mx-auto rounded"
+                        width={400}
+                        height={480}
+                      />
+                    ) : (
+                      <span
+                        className="break-all"
+                        style={{ color: messageTextColor }}
+                      >
+                        {messageContent}
+                      </span>
+                    )}
                     <span
                       className="ml-auto text-sm"
                       style={{ color: messageTextColor }}
@@ -104,26 +155,34 @@ function Room({ params }: { params: { roomId: string } }) {
             })}
           <div ref={messagesEndRef} />
         </div>
-        <div className="rounded-b-lg flex align-center justify-between bg-white">
-          <form
-            className="rounded-b-lg w-11/12"
-            onSubmit={handleSendMessage}
-            ref={formRef}
-          >
-            <input
-              ref={inputRef}
-              type="text"
-              className="rounded-b-lg p-2 w-full text-gray-800"
-              placeholder="Type message..."
-            />
-          </form>
-          <button
-            onClick={handleSendMessage}
-            type="submit"
-            className=" w-10 h-10 text-slate-50 "
-          >
-            <FontAwesomeIcon icon={faLocationArrow} size="lg" color="green" />
-          </button>
+        <div className="rounded-b-lg flex flex-col align-center justify-between bg-white">
+          <div className="flex align-center justify-between">
+            <form
+              className="flex rounded-b-lg w-11/12 relative"
+              onSubmit={handleSendMessage}
+              ref={formRef}
+            >
+              <input
+                ref={inputRef}
+                type="text"
+                className="w-full rounded-b-lg p-2 text-gray-800"
+                placeholder="Type message..."
+              />
+              <input
+                ref={fileInputRef}
+                id="file_input"
+                type="file"
+                style={{ display: "none" }}
+              />
+            </form>
+            <button
+              onClick={handleSendMessage}
+              type="submit"
+              className="w-10 h-10 text-slate-50 "
+            >
+              <FontAwesomeIcon icon={faLocationArrow} size="lg" color="green" />
+            </button>
+          </div>
         </div>
       </section>
     </div>

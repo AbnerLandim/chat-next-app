@@ -23,3 +23,12 @@ export function invertHex(hexCode: string): string {
     .padStart(2, "0")
     .toUpperCase()}${invertedB.toString(16).padStart(2, "0").toUpperCase()}`;
 }
+
+export async function getBinaryFromFile(file: any) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.addEventListener("load", () => resolve(reader.result));
+    reader.addEventListener("error", (err) => reject(err));
+    reader.readAsArrayBuffer(file);
+  });
+}

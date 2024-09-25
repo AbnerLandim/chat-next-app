@@ -78,8 +78,14 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     });
 
     socketInstance.on(room, (data: any) => {
-      console.log("ABNER!!!!!");
       setValue(Date.now().toString(), data);
+      window.dispatchEvent(new Event("sessionStorage"));
+    });
+
+    socketInstance.on(`${room}:img`, (data: any) => {
+      const blob = new Blob([data[0]]);
+      const imgBlobUrl = window.URL.createObjectURL(blob);
+      setValue(Date.now().toString(), `${data[1]}:${imgBlobUrl}`);
       window.dispatchEvent(new Event("sessionStorage"));
     });
 

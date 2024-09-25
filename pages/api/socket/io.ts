@@ -22,6 +22,7 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
   const httpServer: NetServer = res.socket.server as any;
   const io = new ServerIO(httpServer, {
     path,
+    maxHttpBufferSize: 1e8,
     // @ts-ignore
     addTrailingSlash: false,
   });
@@ -40,6 +41,14 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
     socket.on(roomId, (data) => {
       console.log(`Room: ${roomId} => Client ${socket.id} said:`, data);
       io.emit(roomId, data);
+    });
+
+    socket.on(`${roomId}:img`, (data) => {
+      console.log(
+        `Room: ${roomId} => Client ${socket.id} sent an image:`,
+        data
+      );
+      io.emit(`${roomId}:img`, data);
     });
 
     socket.on("disconnect", () => {
