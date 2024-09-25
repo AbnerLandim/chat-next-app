@@ -13,17 +13,17 @@ export default function Home() {
   }
 
   return (
-    <div className="grid grid-rows-[_1fr_] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)] bg-cyan-200">
+    <div className="grid grid-rows-[_1fr_] items-center justify-items-center min-h-screen py-8 px-16 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)] bg-gray-800">
       <main className="flex flex-col rounded bg-white drop-shadow-md w-9/12 h-1/4 p-4 min-w-80 sm:min-w-80">
-        <div className="flex flex-col gap-4 row-start-1 items-center justify-center h-2/4">
-          <h2 className="text-slate-700 text-lg">
+        <div className="flex flex-col gap-4 row-start-1 items-center justify-center h-2/4 px-4">
+          <h2 className="text-slate-700 text-lg font-mono">
             Create a room and share the link with your friends to freely chat
           </h2>
         </div>
         <button
           type="button"
           onClick={handleCreateRoom}
-          className="rounded p-2 w-10/12 bg-cyan-600 text-white mx-auto"
+          className="rounded p-2 w-10/12 bg-cyan-600 text-white mx-auto font-mono"
         >
           Start chat
         </button>

@@ -1,12 +1,12 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
-import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationArrow } from "@fortawesome/free-solid-svg-icons";
 
+import Message from "@/components/message";
 import { useSocket } from "@/components/providers/socket-provider";
 import useSessionStorage from "@/hooks/useSessionStorage";
-import { hexEncode, invertHex, getBinaryFromFile } from "@/app/helpers";
+import { getBinaryFromFile } from "@/app/helpers";
 
 type RoomProps = {
   params: {
@@ -83,74 +83,32 @@ function Room({ params }: RoomProps) {
   return (
     <div className="grid grid-rows-[96px_1fr_] bg-gray-800 p-4 min-h-screen">
       <section className="text-white">
-        <div className="text-sm pb-1">Room Id: {params.roomId}</div>
+        <h2 className="text-xl pb-1 font-mono">{params.roomId}</h2>
         <div className="flex align-center justify-start gap-2">
-          {/* <span>Status:</span> */}
           <div
             className={`rounded-lg ${
-              isConnected ? "bg-lime-600" : "bg-red-500"
+              isConnected ? "bg-emerald-700" : "bg-red-700"
             }  py-0.5 px-1 my-auto`}
           >
-            <span className="text-sm">
+            <span className="text-sm font-semibold font-mono">
               {isConnected ? "connected" : "disconnected"}
             </span>
           </div>
         </div>
       </section>
-      <section className="grid grid-rows-[_1fr_40px] w-full mx-auto rounded-lg md:max-h-[70%] bg-slate-300 sm:pb-20 md:pb-0">
+      <section className="grid grid-rows-[_1fr_40px] w-full mx-auto rounded-lg min-h-[80vh] max-h-[80%] bg-slate-300 sm:pb-20 md:pb-0">
         {/* chat messages */}
-        <div className="p-2 overflow-scroll rounded-t-lg">
+        <div className="p-2 overflow-scroll rounded-t-lg max-h-screen min-h-full">
           {messages
             .sort((a, b) => Number(a.key) - Number(b.key))
             .map((each) => {
-              const [senderId, messageContent] = each.value
-                .replace(/\:/, "&")
-                .split("&");
-              const formattedDate = new Intl.DateTimeFormat("en-US", {
-                timeStyle: "medium",
-                dateStyle: "short",
-              }).format(new Date(Number(each.key)));
-              const messageColor = `#${hexEncode(senderId)}`;
-              const messageTextColor = invertHex(messageColor);
+              const [senderId] = each.value.replace(/\:/, "&").split("&");
               return (
-                <div
-                  className={`${
-                    senderId === socket?.id ? "ml-auto" : ""
-                  } w-9/12 rounded-lg p-2 mb-2 last:mb-80`}
-                  style={{ backgroundColor: `${messageColor}` }}
+                <Message
                   key={each.key}
-                >
-                  <div className="flex flex-col gap-2">
-                    <span
-                      className="mr-auto text-sm"
-                      style={{ color: messageTextColor }}
-                    >
-                      {senderId}
-                    </span>
-                    {messageContent.includes("blob:") ? (
-                      <Image
-                        src={messageContent}
-                        alt={messageContent}
-                        className="mx-auto rounded"
-                        width={400}
-                        height={480}
-                      />
-                    ) : (
-                      <span
-                        className="break-all"
-                        style={{ color: messageTextColor }}
-                      >
-                        {messageContent}
-                      </span>
-                    )}
-                    <span
-                      className="ml-auto text-sm"
-                      style={{ color: messageTextColor }}
-                    >
-                      {formattedDate}
-                    </span>
-                  </div>
-                </div>
+                  isCurrentUser={senderId === socket?.id}
+                  message={each}
+                />
               );
             })}
           <div ref={messagesEndRef} />
