@@ -30,6 +30,14 @@ function Room({ params }: RoomProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
+  /* Had to add this because it gets the last value from the messages state */
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({
+      block: "nearest",
+      behavior: "smooth",
+    });
+  }, [messages]);
+
   useEffect(() => {
     clearAllValues();
     inputRef.current?.focus();
@@ -37,7 +45,6 @@ function Room({ params }: RoomProps) {
     window.addEventListener("sessionStorage", () => {
       const allMessages = getAllValues();
       setMessages(allMessages);
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     });
 
     window.addEventListener("paste", (e) => {
@@ -107,7 +114,7 @@ function Room({ params }: RoomProps) {
       </section>
       <section className="grid grid-rows-[_1fr_40px] w-full mx-auto rounded-lg min-h-[80vh] max-h-[80%] bg-slate-300 sm:pb-20 md:pb-0">
         {/* chat messages */}
-        <div className="relative p-2 overflow-scroll rounded-t-lg max-h-screen min-h-full">
+        <div className="relative p-2 overflow-x-auto rounded-t-lg max-h-screen min-h-full">
           {messages
             .sort((a, b) => Number(a.key) - Number(b.key))
             .map((each) => {
@@ -121,7 +128,7 @@ function Room({ params }: RoomProps) {
               );
             })}
           <div ref={messagesEndRef} />
-          <div className="absolute bottom-2 right-2 max-w-[50%]">
+          <div className="ml-auto sticky bottom-2 right-2 max-w-[50%]">
             {showEmojiModal && (
               <EmojiModal
                 onClose={() => setShowEmojiModal(false)}
