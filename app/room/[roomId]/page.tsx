@@ -1,10 +1,14 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLocationArrow } from "@fortawesome/free-solid-svg-icons";
+import {
+  faLocationArrow,
+  faFaceSmile,
+} from "@fortawesome/free-solid-svg-icons";
 
 import Message from "@/components/message";
 import { useSocket } from "@/components/providers/socket-provider";
+import EmojiModal from "@/components/emoji_modal";
 import useSessionStorage from "@/hooks/useSessionStorage";
 import { getBinaryFromFile } from "@/app/helpers";
 
@@ -19,6 +23,7 @@ function Room({ params }: RoomProps) {
   const [messages, setMessages] = useState<{ key: string; value: string }[]>(
     []
   );
+  const [showEmojiModal, setShowEmojiModal] = useState(false);
   const { getAllValues, clearAllValues } = useSessionStorage();
   const inputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -80,6 +85,10 @@ function Room({ params }: RoomProps) {
     }
   }
 
+  function handleAddEmoji(emoji: string) {
+    if (inputRef.current) inputRef.current.value += emoji;
+  }
+
   return (
     <div className="grid grid-rows-[96px_1fr_] bg-gray-800 p-4 min-h-screen">
       <section className="text-white">
@@ -98,7 +107,7 @@ function Room({ params }: RoomProps) {
       </section>
       <section className="grid grid-rows-[_1fr_40px] w-full mx-auto rounded-lg min-h-[80vh] max-h-[80%] bg-slate-300 sm:pb-20 md:pb-0">
         {/* chat messages */}
-        <div className="p-2 overflow-scroll rounded-t-lg max-h-screen min-h-full">
+        <div className="relative p-2 overflow-scroll rounded-t-lg max-h-screen min-h-full">
           {messages
             .sort((a, b) => Number(a.key) - Number(b.key))
             .map((each) => {
@@ -112,6 +121,14 @@ function Room({ params }: RoomProps) {
               );
             })}
           <div ref={messagesEndRef} />
+          <div className="absolute bottom-2 right-2 max-w-[50%]">
+            {showEmojiModal && (
+              <EmojiModal
+                onClose={() => setShowEmojiModal(false)}
+                onAddEmoji={handleAddEmoji}
+              />
+            )}
+          </div>
         </div>
         <div className="rounded-b-lg flex flex-col align-center justify-between bg-white">
           <div className="flex align-center justify-between">
@@ -133,6 +150,12 @@ function Room({ params }: RoomProps) {
                 style={{ display: "none" }}
               />
             </form>
+            <button
+              onClick={() => setShowEmojiModal((prev) => !prev)}
+              className="w-10 h-10 text-slate-50 "
+            >
+              <FontAwesomeIcon icon={faFaceSmile} size="lg" color="green" />
+            </button>
             <button
               onClick={handleSendMessage}
               type="submit"
