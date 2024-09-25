@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Anonymous Chat App
+
+An **anonymous chat application** built with **Next.js** and containerized using **Docker**. This app allows users to join chat rooms and communicate without revealing their identity, providing a secure and anonymous chatting experience.
+
+Want to try out? Join a chat room [here](https://lionfish-app-jl362.ondigitalocean.app/room/my-room-name).
+
+![alt text](image.png)
+
+## Features
+
+- **Real-time messaging**: Instant communication between users using WebSocket or any messaging protocol of your choice.
+- **Anonymous login**: No registration required – users join chat rooms anonymously.
+- **Multiple chat rooms**: Users can create or join different chat rooms for diverse discussions.
+- **Responsive UI**: A modern, mobile-friendly design built using Next.js and styled-components or TailwindCSS.
+- **Secure communication**: Messages are transmitted securely, with an emphasis on user privacy.
+- **Dockerized environment**: Easily deployable through a Docker container for consistency across environments.
+
+## Technologies
+
+- **Next.js**: Front-end framework for building server-side rendered React applications.
+- **WebSockets/Socket.io**: Enables real-time communication between the client and the server.
+- **Docker**: Containerization platform used to package the application for smooth deployment across environments.
+- **Styled Components/TailwindCSS**: For styling the application with reusable components or utility-first CSS.
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Ensure you have the following installed on your machine:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- [Docker](https://docs.docker.com/get-docker/)
+- [Node.js](https://nodejs.org/) (for local development)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Clone the repository:
 
-## Learn More
+   ```bash
+   git clone https://github.com/AbnerLandim/chat-next-app.git
+   cd chat-next-app
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+2. Build and run the Docker container:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+   ```bash
+   docker-compose up --build
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. Access the application:
 
-## Deploy on Vercel
+   The app will be running on `http://localhost:3000` by default.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Local Development
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+If you prefer to run the app locally without Docker:
+
+1. Install dependencies:
+
+   ```bash
+   pnpm install
+   ```
+
+2. Run the development server:
+
+   ```bash
+   pnpm run dev
+   ```
+
+3. Open `http://localhost:3000` in your browser to view the app.
+
+## Docker Deployment
+
+To deploy the application using Docker, use the following commands:
+
+1. Build the Docker image:
+
+   ```bash
+   docker build -t anonymous-chat-app .
+   ```
+
+2. Run the Docker container:
+
+   ```bash
+   docker run -p 3000:3000 anonymous-chat-app
+   ```
+
+## Contributing
+
+Feel free to fork this repository and submit pull requests for any features or improvements!
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
