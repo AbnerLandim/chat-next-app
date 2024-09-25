@@ -10,7 +10,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <SocketProvider>
-        <body className="overflow-hidden">{children}</body>
+        <body>{children}</body>
       </SocketProvider>
     </html>
   );
