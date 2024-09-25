@@ -128,7 +128,7 @@ function Room({ params }: RoomProps) {
               );
             })}
           <div ref={messagesEndRef} />
-          <div className="ml-auto sticky bottom-2 right-2 max-w-[50%]">
+          <div className="ml-auto mt-80 sticky bottom-2 right-2 max-w-[50%]">
             {showEmojiModal && (
               <EmojiModal
                 onClose={() => setShowEmojiModal(false)}
