@@ -22,31 +22,37 @@ function Message({ isCurrentUser, message }: MessageProps) {
     <div
       className={`${
         isCurrentUser ? "ml-auto" : ""
-      } w-9/12 rounded-lg p-2 mb-2 last:mb-80 font-mono`}
+      } max-w-[75%] rounded-[18px] p-2 mb-2 font-mono shadow-lg w-fit`}
       style={{ backgroundColor: `${messageColor}` }}
       key={message.key}
     >
-      <div className="flex flex-col gap-2">
-        <span className="mr-auto text-sm" style={{ color: messageTextColor }}>
+      <div className="flex flex-col gap-1">
+        <span
+          className="mr-auto text-xs"
+          style={{ color: messageTextColor, opacity: 0.5 }}
+        >
           {senderId}
         </span>
         {messageContent.includes("blob:") ? (
           <Image
             src={messageContent}
             alt={messageContent}
-            className="mx-auto rounded"
+            className="mx-auto rounded-md"
             width={400}
             height={480}
           />
         ) : (
           <span
-            className="break-all font-mono"
+            className="break-words font-mono"
             style={{ color: messageTextColor }}
           >
             {messageContent}
           </span>
         )}
-        <span className="ml-auto text-sm" style={{ color: messageTextColor }}>
+        <span
+          className="ml-auto text-xs"
+          style={{ color: messageTextColor, opacity: 0.5 }}
+        >
           {formattedDate}
         </span>
       </div>

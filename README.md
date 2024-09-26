@@ -4,14 +4,14 @@ An **anonymous chat application** built with **Next.js** and containerized using
 
 Want to try out? Join a chat room [here](https://lionfish-app-jl362.ondigitalocean.app/room/my-room-name).
 
-![alt text](image.png)
+![alt text](image-1.png)
 
 ## Features
 
-- **Real-time messaging**: Instant communication between users using WebSocket or any messaging protocol of your choice.
+- **Real-time messaging**: Instant communication between users using WebSockets.
 - **Anonymous login**: No registration required – users join chat rooms anonymously.
 - **Multiple chat rooms**: Users can create or join different chat rooms for diverse discussions.
-- **Responsive UI**: A modern, mobile-friendly design built using Next.js and styled-components or TailwindCSS.
+- **Responsive UI**: A modern, mobile-friendly design built using Next.js and TailwindCSS.
 - **Secure communication**: Messages are transmitted securely, with an emphasis on user privacy.
 - **Dockerized environment**: Easily deployable through a Docker container for consistency across environments.
 
@@ -20,7 +20,7 @@ Want to try out? Join a chat room [here](https://lionfish-app-jl362.ondigitaloce
 - **Next.js**: Front-end framework for building server-side rendered React applications.
 - **WebSockets/Socket.io**: Enables real-time communication between the client and the server.
 - **Docker**: Containerization platform used to package the application for smooth deployment across environments.
-- **Styled Components/TailwindCSS**: For styling the application with reusable components or utility-first CSS.
+- **TailwindCSS**: For styling the application with reusable components or utility-first CSS.
 
 ## Getting Started
 

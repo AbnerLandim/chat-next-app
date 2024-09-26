@@ -11,7 +11,7 @@ type EmojiModalProps = {
 
 function EmojiModal({ onClose, onAddEmoji }: EmojiModalProps) {
   return (
-    <div className="flex flex-col bg-white rounded-lg p-2 border-solid border-2 border-slate-700">
+    <div className="flex flex-col bg-white rounded-lg p-2 border-solid shadow-lg">
       <div className="cursor-pointer ml-auto" onClick={onClose}>
         <FontAwesomeIcon icon={faXmark} size="lg" color="gray" />
       </div>

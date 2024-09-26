@@ -23,6 +23,9 @@ dependencies:
   react-dom:
     specifier: ^18
     version: 18.3.1(react@18.3.1)
+  react-icons:
+    specifier: ^5.3.0
+    version: 5.3.0(react@18.3.1)
   seedrandom:
     specifier: ^3.0.5
     version: 3.0.5
@@ -46,6 +49,9 @@ devDependencies:
   '@types/react-dom':
     specifier: ^18
     version: 18.3.0
+  '@types/react-icons':
+    specifier: ^3.0.0
+    version: 3.0.0(react@18.3.1)
   '@types/seedrandom':
     specifier: ^3.0.8
     version: 3.0.8
@@ -394,6 +400,15 @@ packages:
     resolution: {integrity: sha512-EhwApuTmMBmXuFOikhQLIBUn6uFg81SwLMOAUgodJF14SOBOCMdU04gDoYi0WOJJHD144TL32z4yDqCW3dnkQg==}
     dependencies:
       '@types/react': 18.3.9
+    dev: true
+
+  /@types/react-icons@3.0.0(react@18.3.1):
+    resolution: {integrity: sha512-Vefs6LkLqF61vfV7AiAqls+vpR94q67gunhMueDznG+msAkrYgRxl7gYjNem/kZ+as2l2mNChmF1jRZzzQQtMg==}
+    deprecated: This is a stub types definition. react-icons provides its own type definitions, so you do not need this installed.
+    dependencies:
+      react-icons: 5.3.0(react@18.3.1)
+    transitivePeerDependencies:
+      - react
     dev: true
 
   /@types/react@18.3.9:
@@ -3020,6 +3035,13 @@ packages:
       scheduler: 0.23.2
     dev: false
 
+  /react-icons@5.3.0(react@18.3.1):
+    resolution: {integrity: sha512-DnUk8aFbTyQPSkCfF8dbX6kQjXA9DktMeJqfjrg6cK9vwQVMxmcA3BfP4QoiztVmEHtwlTgLFsPuH2NskKT6eg==}
+    peerDependencies:
+      react: '*'
+    dependencies:
+      react: 18.3.1
+
   /react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
@@ -3028,7 +3050,6 @@ packages:
     engines: {node: '>=0.10.0'}
     dependencies:
       loose-envify: 1.4.0
-    dev: false
 
   /read-cache@1.0.0:
     resolution: {integrity: sha512-Owdv/Ft7IjOgm/i0xvNDZ1LrRANRfew4b2prF3OWMQLxLfu3bS8FVhCsrSCMK4lR56Y9ya+AThoTpDCTxCmpRA==}
