@@ -1,6 +1,6 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
-import { SlEmotsmile } from "react-icons/sl";
+import { SlEmotsmile, SlMicrophone } from "react-icons/sl";
 import { HiPaperAirplane } from "react-icons/hi2";
 
 import Message from "@/components/message";
@@ -23,6 +23,7 @@ function Room({ params }: RoomProps) {
   const { getAllValues, clearAllValues } = useSessionStorage();
 
   const [imagePreview, setImagePreview] = useState("");
+  const [textMessage, setTextMessage] = useState("");
   const [messages, setMessages] = useState<{ key: string; value: string }[]>(
     []
   );
@@ -62,7 +63,6 @@ function Room({ params }: RoomProps) {
 
   async function handleSendMessage(e?: any) {
     e?.preventDefault();
-    const messageValue: string = inputRef.current?.value as string;
     if (!!fileInputRef?.current?.files?.length) {
       const binary = await getBinaryFromFile(fileInputRef.current?.files?.[0]);
       socket.emit(`${room}:img`, [binary, socket.id]);
@@ -70,15 +70,16 @@ function Room({ params }: RoomProps) {
       formRef.current?.reset();
       return;
     }
-    if (messageValue?.length > 0) {
-      socket.emit(room, `${socket.id}:${messageValue}`);
+    if (textMessage?.length > 0) {
+      socket.emit(room, `${socket.id}:${textMessage}`);
       setShowEmojiModal(false);
+      setTextMessage("");
       formRef.current?.reset();
     }
   }
 
   function handleAddEmoji(emoji: string) {
-    if (inputRef.current) inputRef.current.value += emoji;
+    setTextMessage((prev) => prev.concat(emoji));
   }
 
   return (
@@ -127,9 +128,11 @@ function Room({ params }: RoomProps) {
               >
                 <input
                   ref={inputRef}
+                  value={textMessage}
                   type="text"
                   className=" w-full rounded-lg p-2 text-gray-900 bg-transparent focus:outline-none"
                   placeholder="Type message..."
+                  onChange={(e) => setTextMessage(e.target.value)}
                 />
                 <input
                   ref={fileInputRef}
@@ -149,13 +152,22 @@ function Room({ params }: RoomProps) {
                     style={{ opacity: 0.6 }}
                   />
                 </button>
-                <button
-                  onClick={handleSendMessage}
-                  type="submit"
-                  className="w-10 h-10 bg-emerald-700 flex items-center justify-center rounded-full shadow-md"
-                >
-                  <HiPaperAirplane color="white" size={18} />
-                </button>
+                {textMessage.length > 0 ? (
+                  <button
+                    onClick={handleSendMessage}
+                    type="submit"
+                    className="w-10 h-10 bg-emerald-700 flex items-center justify-center rounded-full shadow-md"
+                  >
+                    <HiPaperAirplane color="white" size={18} />
+                  </button>
+                ) : (
+                  <button
+                    // onClick={handleSendMessage}
+                    className="w-10 h-10 flex items-center"
+                  >
+                    <SlMicrophone size={22} color="#045c12" />
+                  </button>
+                )}
               </div>
             </div>
           </div>
