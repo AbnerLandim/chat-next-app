@@ -1,6 +1,6 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
-import { SlEmotsmile, SlMicrophone } from "react-icons/sl";
+import { SlEmotsmile /* SlMicrophone */ } from "react-icons/sl";
 import { HiPaperAirplane } from "react-icons/hi2";
 
 import Message from "@/components/message";
@@ -119,10 +119,10 @@ function Room({ params }: RoomProps) {
               )}
             </div>
           </div>
-          <div className="rounded-full flex flex-col align-center justify-between bg-white shadow-md">
+          <div className="rounded-2xl flex flex-col align-center justify-between bg-slate-50 shadow-md">
             <div className="flex items-center justify-between min-h-full px-2">
               <form
-                className="flex rounded-lg w-[70%] relative"
+                className="flex rounded-lg w-[75%] relative"
                 onSubmit={handleSendMessage}
                 ref={formRef}
               >
@@ -130,7 +130,7 @@ function Room({ params }: RoomProps) {
                   ref={inputRef}
                   value={textMessage}
                   type="text"
-                  className=" w-full rounded-lg p-2 text-gray-900 bg-transparent focus:outline-none"
+                  className="bg-white border-solid border-[0.5px] border-slate-500 w-full rounded-2xl p-2 text-gray-900 bg-transparent focus:outline-none"
                   placeholder="Type message..."
                   onChange={(e) => setTextMessage(e.target.value)}
                 />
@@ -152,22 +152,25 @@ function Room({ params }: RoomProps) {
                     style={{ opacity: 0.6 }}
                   />
                 </button>
-                {textMessage.length > 0 ? (
-                  <button
-                    onClick={handleSendMessage}
-                    type="submit"
-                    className="w-10 h-10 bg-emerald-700 flex items-center justify-center rounded-full shadow-md"
-                  >
-                    <HiPaperAirplane color="white" size={18} />
-                  </button>
-                ) : (
-                  <button
-                    // onClick={handleSendMessage}
-                    className="w-10 h-10 flex items-center"
-                  >
-                    <SlMicrophone size={22} color="#045c12" />
-                  </button>
-                )}
+                {
+                  textMessage.length > 0 && (
+                    <button
+                      onClick={handleSendMessage}
+                      type="submit"
+                      className="w-10 h-10 bg-emerald-700 flex items-center justify-center rounded-full shadow-md"
+                    >
+                      <HiPaperAirplane color="white" size={18} />
+                    </button>
+                  )
+                  // : (
+                  //   <button
+                  //     // onClick={handleSendMessage}
+                  //     className="w-10 h-10 flex items-center"
+                  //   >
+                  //     <SlMicrophone size={22} color="#045c12" />
+                  //   </button>
+                  // )}
+                }
               </div>
             </div>
           </div>
