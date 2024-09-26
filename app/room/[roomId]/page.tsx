@@ -7,6 +7,7 @@ import Message from "@/components/message";
 import { useSocket } from "@/components/providers/socket-provider";
 import ImagePreviewModal from "@/components/image_preview_modal";
 import EmojiModal from "@/components/emoji_modal";
+import RoomHeader from "@/components/room_header";
 import useSessionStorage from "@/hooks/useSessionStorage";
 import { getBinaryFromFile } from "@/app/helpers";
 import { handlePasteItem } from "@/app/room/[roomId]/helpers";
@@ -18,7 +19,7 @@ type RoomProps = {
 };
 
 function Room({ params }: RoomProps) {
-  const { isConnected, socket, room } = useSocket();
+  const { socket, room } = useSocket();
   const { getAllValues, clearAllValues } = useSessionStorage();
 
   const [imagePreview, setImagePreview] = useState("");
@@ -83,24 +84,7 @@ function Room({ params }: RoomProps) {
   return (
     <>
       <div className="grid grid-rows-[96px_1fr_] bg-slate-200 p-4 min-h-screen">
-        <section className="bg-gray-600/20 rounded-lg mb-1 p-2">
-          <h2 className="text-xl pb-1 font-mono text-gray-800">
-            {params.roomId}
-          </h2>
-          <div className="flex align-center justify-start gap-2">
-            <div
-              className={`rounded-lg ${
-                isConnected ? "bg-emerald-400/50" : "bg-rose-400/50"
-              }  ${
-                isConnected ? "text-emerald-700" : "text-red-700"
-              }  py-0.5 px-1 my-auto`}
-            >
-              <span className="text-sm font-semibold font-mono">
-                {isConnected ? "connected" : "disconnected"}
-              </span>
-            </div>
-          </div>
-        </section>
+        <RoomHeader roomId={params.roomId} />
         <section className="grid grid-rows-[_1fr_80px] w-full mx-auto rounded-lg min-h-[70vh] max-h-[70%]  sm:pb-20 md:pb-0">
           {/* chat messages */}
           <div className="relative p-2 overflow-x-auto max-h-screen min-h-full">
