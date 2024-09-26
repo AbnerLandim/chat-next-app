@@ -157,7 +157,7 @@ function Room({ params }: RoomProps) {
           <div className="rounded-full flex flex-col align-center justify-between bg-white shadow-md">
             <div className="flex items-center justify-evenly min-h-full">
               <form
-                className="flex rounded-lg w-[85%] relative"
+                className="flex rounded-lg w-[70%] relative"
                 onSubmit={handleSendMessage}
                 ref={formRef}
               >
