@@ -9,6 +9,7 @@ import ImagePreviewModal from "@/components/image_preview_modal";
 import EmojiModal from "@/components/emoji_modal";
 import useSessionStorage from "@/hooks/useSessionStorage";
 import { getBinaryFromFile } from "@/app/helpers";
+import { handlePasteItem } from "@/app/room/[roomId]/helpers";
 
 type RoomProps = {
   params: {
@@ -49,28 +50,7 @@ function Room({ params }: RoomProps) {
     });
 
     window.addEventListener("paste", (e) => {
-      const clipboardItems = e?.clipboardData?.items;
-      const items = [].slice
-        .call(clipboardItems)
-        .filter((each: any) => /^image\//.test(each.type));
-
-      if (items.length === 0) return;
-
-      const item: any = items[0];
-      const blob = item.getAsFile();
-
-      /* Leave this here for future use */
-      const srcFromImg = URL.createObjectURL(blob);
-      setImagePreview(srcFromImg);
-      const file = new File([blob], "file name", {
-        type: "image/jpeg",
-        lastModified: new Date().getTime(),
-      });
-      const container = new DataTransfer();
-      container.items.add(file);
-      const filesForInput = container.files;
-      const filesElement: any = document.querySelector("#file_input");
-      filesElement.files = filesForInput;
+      handlePasteItem(e)(setImagePreview);
     });
 
     return () => {
@@ -155,7 +135,7 @@ function Room({ params }: RoomProps) {
             </div>
           </div>
           <div className="rounded-full flex flex-col align-center justify-between bg-white shadow-md">
-            <div className="flex items-center justify-evenly min-h-full">
+            <div className="flex items-center justify-between min-h-full px-2">
               <form
                 className="flex rounded-lg w-[70%] relative"
                 onSubmit={handleSendMessage}
@@ -174,23 +154,25 @@ function Room({ params }: RoomProps) {
                   style={{ display: "none" }}
                 />
               </form>
-              <button
-                onClick={() => setShowEmojiModal((prev) => !prev)}
-                className="w-10 h-10 text-slate-50 flex items-center justify-center"
-              >
-                <SlEmotsmile
-                  color="#045c12"
-                  size={24}
-                  style={{ opacity: 0.6 }}
-                />
-              </button>
-              <button
-                onClick={handleSendMessage}
-                type="submit"
-                className="w-10 h-10 bg-emerald-700 flex items-center justify-center rounded-full shadow-md"
-              >
-                <HiPaperAirplane color="white" size={18} />
-              </button>
+              <div className="flex gap-4">
+                <button
+                  onClick={() => setShowEmojiModal((prev) => !prev)}
+                  className="w-10 h-10 text-slate-50 flex items-center justify-center"
+                >
+                  <SlEmotsmile
+                    color="#045c12"
+                    size={24}
+                    style={{ opacity: 0.6 }}
+                  />
+                </button>
+                <button
+                  onClick={handleSendMessage}
+                  type="submit"
+                  className="w-10 h-10 bg-emerald-700 flex items-center justify-center rounded-full shadow-md"
+                >
+                  <HiPaperAirplane color="white" size={18} />
+                </button>
+              </div>
             </div>
           </div>
         </section>
