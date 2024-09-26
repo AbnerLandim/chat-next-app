@@ -1,6 +1,5 @@
 import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { BsX } from "react-icons/bs";
 
 import { UNICODE_EMOJIS } from "@/app/helpers";
 
@@ -13,7 +12,7 @@ function EmojiModal({ onClose, onAddEmoji }: EmojiModalProps) {
   return (
     <div className="flex flex-col bg-white rounded-lg p-2 border-solid shadow-lg">
       <div className="cursor-pointer ml-auto" onClick={onClose}>
-        <FontAwesomeIcon icon={faXmark} size="lg" color="gray" />
+        <BsX size={28} color="gray" />
       </div>
       <div className="grid grid-rows-4 grid-flow-col gap-2 overflow-x-auto">
         {UNICODE_EMOJIS.map((emoji) => (
