@@ -13,17 +13,26 @@ function AudioPlayer({ url }: AudioPlayerProps) {
   const [audioProgress, setAudioProgress] = useState(0);
 
   useEffect(() => {
-    const increment = audioRef.current
-      ? NORMALIZED_MAX_PLAYER_VALUE / audioRef.current.duration
+    let increment = audioRef.current
+      ? Math.ceil(
+          NORMALIZED_MAX_PLAYER_VALUE / Math.ceil(audioRef.current.duration) - 1
+        )
       : 1;
+
     if (
       !isPlaying ||
-      audioProgress + increment >= NORMALIZED_MAX_PLAYER_VALUE ||
+      audioProgress > NORMALIZED_MAX_PLAYER_VALUE ||
       audioProgress === 0
     )
       return;
 
     const timer = setTimeout(() => {
+      if (
+        audioProgress < NORMALIZED_MAX_PLAYER_VALUE &&
+        Math.ceil(NORMALIZED_MAX_PLAYER_VALUE - audioProgress) < increment
+      ) {
+        increment = NORMALIZED_MAX_PLAYER_VALUE - audioProgress;
+      }
       setAudioProgress((prev) => prev + increment);
     }, 1000); // Update time every second
 
@@ -54,7 +63,9 @@ function AudioPlayer({ url }: AudioPlayerProps) {
           src={url}
           onPlay={handlePlay}
           onEnded={() => {
-            setIsPlaying(false);
+            setTimeout(() => {
+              setIsPlaying(false);
+            }, 1000);
           }}
           onLoadedMetadata={() => {
             if (audioRef.current)
