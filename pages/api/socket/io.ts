@@ -43,6 +43,14 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
       io.emit(roomId, data);
     });
 
+    socket.on(`${roomId}:audioStream`, (audioData) => {
+      console.log(
+        `Room: ${roomId} => Client ${socket.id} sent an audio clip:`,
+        audioData
+      );
+      io.emit(`${roomId}:audioStream`, audioData);
+    });
+
     socket.on(`${roomId}:img`, (data) => {
       console.log(
         `Room: ${roomId} => Client ${socket.id} sent an image:`,

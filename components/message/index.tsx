@@ -1,6 +1,8 @@
 import React from "react";
 import Image from "next/image";
+
 import { hexEncode, invertHex } from "@/app/helpers";
+import AudioPlayer from "@/components/audio_player";
 
 type MessageProps = {
   isCurrentUser: boolean;
@@ -22,7 +24,7 @@ function Message({ isCurrentUser, message }: MessageProps) {
     <div
       className={`${
         isCurrentUser ? "ml-auto" : ""
-      } max-w-[75%] rounded-[18px] p-2 mb-2 font-mono shadow-lg w-fit`}
+      } max-w-[75%] rounded-[18px] p-2 mb-2 font-sans shadow-lg w-fit`}
       style={{ backgroundColor: `${messageColor}` }}
       key={message.key}
     >
@@ -33,17 +35,22 @@ function Message({ isCurrentUser, message }: MessageProps) {
         >
           {senderId}
         </span>
-        {messageContent.includes("blob:") ? (
-          <Image
-            src={messageContent}
-            alt={messageContent}
-            className="mx-auto rounded-md"
-            width={400}
-            height={480}
-          />
-        ) : (
+        {messageContent.includes("audio:") && (
+          <AudioPlayer url={messageContent.replace("audio:", "")} />
+        )}
+        {messageContent.includes("blob:") &&
+          !messageContent.includes("audio:") && (
+            <Image
+              src={messageContent}
+              alt={messageContent}
+              className="mx-auto rounded-md"
+              width={400}
+              height={480}
+            />
+          )}
+        {!messageContent.includes("blob:") && (
           <span
-            className="break-words font-mono"
+            className="break-words font-sans"
             style={{ color: messageTextColor }}
           >
             {messageContent}

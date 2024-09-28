@@ -1,14 +1,16 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
-import { SlEmotsmile /* SlMicrophone */ } from "react-icons/sl";
+import { SlEmotsmile, SlMicrophone } from "react-icons/sl";
 import { HiPaperAirplane } from "react-icons/hi2";
 
-import Message from "@/components/message";
+import useSessionStorage from "@/hooks/useSessionStorage";
 import { useSocket } from "@/components/providers/socket-provider";
+import Message from "@/components/message";
 import ImagePreviewModal from "@/components/image_preview_modal";
 import EmojiModal from "@/components/emoji_modal";
 import RoomHeader from "@/components/room_header";
-import useSessionStorage from "@/hooks/useSessionStorage";
+// import AudioPlayer from "@/components/audio_player";
+import AudioPreview from "@/components/audio_preview";
 import { getBinaryFromFile } from "@/app/helpers";
 import { handlePasteItem } from "@/app/room/[roomId]/helpers";
 
@@ -23,7 +25,10 @@ function Room({ params }: RoomProps) {
   const { getAllValues, clearAllValues } = useSessionStorage();
 
   const [imagePreview, setImagePreview] = useState("");
+  const [showAudioPreview, setShowAudioPreview] = useState(false);
+  const [audioClip, setAudioClip] = useState("");
   const [textMessage, setTextMessage] = useState("");
+  const [isRecording, setIsRecording] = useState(false);
   const [messages, setMessages] = useState<{ key: string; value: string }[]>(
     []
   );
@@ -33,6 +38,7 @@ function Room({ params }: RoomProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   /* Had to add this because it gets the last value from the messages state */
   useEffect(() => {
@@ -63,6 +69,12 @@ function Room({ params }: RoomProps) {
 
   async function handleSendMessage(e?: any) {
     e?.preventDefault();
+    if (showAudioPreview) {
+      socket.emit(`${room}:audioStream`, [audioClip, socket.id]);
+      setShowAudioPreview(false);
+      setAudioClip("");
+      return;
+    }
     if (!!fileInputRef?.current?.files?.length) {
       const binary = await getBinaryFromFile(fileInputRef.current?.files?.[0]);
       socket.emit(`${room}:img`, [binary, socket.id]);
@@ -83,49 +95,60 @@ function Room({ params }: RoomProps) {
   }
 
   return (
-    <>
-      <div className="grid grid-rows-[96px_1fr_] bg-slate-200 p-4 min-h-screen">
-        <RoomHeader roomId={params.roomId} />
-        <section className="grid grid-rows-[_1fr_80px] w-full mx-auto rounded-lg min-h-[70vh] max-h-[70%]  sm:pb-20 md:pb-0">
-          {/* chat messages */}
-          <div className="relative p-2 overflow-x-auto max-h-screen min-h-full">
-            {messages
-              .sort((a, b) => Number(a.key) - Number(b.key))
-              .map((each) => {
-                const [senderId] = each.value.replace(/\:/, "&").split("&");
-                return (
-                  <Message
-                    key={each.key}
-                    isCurrentUser={senderId === socket?.id}
-                    message={each}
-                  />
-                );
-              })}
-            {imagePreview.length > 0 && (
-              <ImagePreviewModal
-                imageUrl={imagePreview}
-                onClose={() => setImagePreview("")}
-                onSend={handleSendMessage}
-                title="Send image?"
+    <div className="grid grid-rows-[96px_1fr_] bg-slate-200 p-4 min-h-screen">
+      <RoomHeader roomId={params.roomId} />
+      <section className="grid grid-rows-[_1fr_80px] w-full mx-auto rounded-lg min-h-[70vh] max-h-[70%]  sm:pb-20 md:pb-0">
+        {/* chat messages */}
+        <div className="relative p-2 overflow-x-auto max-h-screen min-h-full">
+          {messages
+            .sort((a, b) => Number(a.key) - Number(b.key))
+            .map((each) => {
+              const [senderId] = each.value.replace(/\:/, "&").split("&");
+              return (
+                <Message
+                  key={each.key}
+                  isCurrentUser={senderId === socket?.id}
+                  message={each}
+                />
+              );
+            })}
+          {imagePreview.length > 0 && (
+            <ImagePreviewModal
+              imageUrl={imagePreview}
+              onClose={() => setImagePreview("")}
+              onSend={handleSendMessage}
+              title="Send image?"
+            />
+          )}
+          <div ref={messagesEndRef} />
+          <div className="ml-auto mt-80 sticky bottom-2 right-2 max-w-[50%]">
+            {showEmojiModal && (
+              <EmojiModal
+                onClose={() => setShowEmojiModal(false)}
+                onAddEmoji={handleAddEmoji}
               />
             )}
-            <div ref={messagesEndRef} />
-            <div className="ml-auto mt-80 sticky bottom-2 right-2 max-w-[50%]">
-              {showEmojiModal && (
-                <EmojiModal
-                  onClose={() => setShowEmojiModal(false)}
-                  onAddEmoji={handleAddEmoji}
-                />
-              )}
-            </div>
           </div>
-          <div className="rounded-2xl flex flex-col align-center justify-between bg-slate-50 shadow-md">
-            <div className="flex items-center justify-between min-h-full px-2">
-              <form
-                className="flex rounded-lg w-[75%] relative"
-                onSubmit={handleSendMessage}
-                ref={formRef}
-              >
+          {/* <AudioPlayer
+            recordingState={isRecording}
+            setRecordingState={setIsRecording}
+          /> */}
+          <audio ref={audioRef} controls={false} />
+        </div>
+        <div className="rounded-2xl flex flex-col align-center justify-between bg-slate-50 shadow-md">
+          <div className="flex items-center justify-between min-h-full px-2">
+            <form
+              className="flex rounded-lg w-[75%]"
+              onSubmit={handleSendMessage}
+              ref={formRef}
+            >
+              {showAudioPreview ? (
+                <AudioPreview
+                  isRecording={isRecording}
+                  setAudioClip={setAudioClip}
+                  onCancel={() => setShowAudioPreview(false)}
+                />
+              ) : (
                 <input
                   ref={inputRef}
                   value={textMessage}
@@ -134,49 +157,53 @@ function Room({ params }: RoomProps) {
                   placeholder="Type message..."
                   onChange={(e) => setTextMessage(e.target.value)}
                 />
-                <input
-                  ref={fileInputRef}
-                  id="file_input"
-                  type="file"
-                  style={{ display: "none" }}
+              )}
+
+              <input
+                ref={fileInputRef}
+                id="file_input"
+                type="file"
+                style={{ display: "none" }}
+              />
+            </form>
+            <div className="flex gap-4">
+              <button
+                onClick={() => setShowEmojiModal((prev) => !prev)}
+                className="w-10 h-10 text-slate-50 flex items-center justify-center"
+              >
+                <SlEmotsmile
+                  color="#045c12"
+                  size={24}
+                  style={{ opacity: 0.6 }}
                 />
-              </form>
-              <div className="flex gap-4">
+              </button>
+              {textMessage.length > 0 || (showAudioPreview && !isRecording) ? (
                 <button
-                  onClick={() => setShowEmojiModal((prev) => !prev)}
-                  className="w-10 h-10 text-slate-50 flex items-center justify-center"
+                  onClick={handleSendMessage}
+                  type="submit"
+                  className="w-10 h-10 bg-emerald-700 flex items-center justify-center rounded-full shadow-md"
                 >
-                  <SlEmotsmile
-                    color="#045c12"
-                    size={24}
-                    style={{ opacity: 0.6 }}
+                  <HiPaperAirplane color="white" size={18} />
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    setShowAudioPreview(true);
+                    setIsRecording((prev) => !prev);
+                  }}
+                  className="w-10 h-10 flex items-center"
+                >
+                  <SlMicrophone
+                    size={22}
+                    color={isRecording ? "red" : "#045c12"}
                   />
                 </button>
-                {
-                  textMessage.length > 0 && (
-                    <button
-                      onClick={handleSendMessage}
-                      type="submit"
-                      className="w-10 h-10 bg-emerald-700 flex items-center justify-center rounded-full shadow-md"
-                    >
-                      <HiPaperAirplane color="white" size={18} />
-                    </button>
-                  )
-                  // : (
-                  //   <button
-                  //     // onClick={handleSendMessage}
-                  //     className="w-10 h-10 flex items-center"
-                  //   >
-                  //     <SlMicrophone size={22} color="#045c12" />
-                  //   </button>
-                  // )}
-                }
-              </div>
+              )}
             </div>
           </div>
-        </section>
-      </div>
-    </>
+        </div>
+      </section>
+    </div>
   );
 }
 

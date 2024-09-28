@@ -16,10 +16,13 @@ function ImagePreviewModal({
   onSend,
 }: ImagePreviewModalProps) {
   return (
-    <div className="fixed top-0 left-0 right-0 bottom-0 bg-white/50 flex items-center justify-center z-1000">
+    <div
+      className="fixed top-0 left-0 right-0 bottom-0 bg-white/50 flex items-center justify-center"
+      style={{ zIndex: 1 }}
+    >
       <div className="bg-white p-4 rounded-lg w-[500px] max-h-full shadow-xl">
         <div className="flex justify-between items-center mb-[10px]">
-          <h2 className="text-stone-800 font-mono">{title}</h2>
+          <h2 className="text-stone-800 font-sans font-semibold">{title}</h2>
           <button
             onClick={onClose}
             className="bg-none b-none text-base cursor-pointer"

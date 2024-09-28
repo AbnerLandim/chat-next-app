@@ -20,6 +20,7 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        "main-background": "#045c12",
       },
     },
   },

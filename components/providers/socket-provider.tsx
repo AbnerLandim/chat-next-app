@@ -82,7 +82,12 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       window.dispatchEvent(new Event("sessionStorage"));
     });
 
-    socketInstance.on(`${room}:img`, (data: any) => {
+    socketInstance.on(`${room}:audioStream`, (audioData: Array<any>) => {
+      setValue(Date.now().toString(), `${audioData[1]}:audio:${audioData[0]}`);
+      window.dispatchEvent(new Event("sessionStorage"));
+    });
+
+    socketInstance.on(`${room}:img`, (data: Array<any>) => {
       const blob = new Blob([data[0]]);
       const imgBlobUrl = window.URL.createObjectURL(blob);
       setValue(Date.now().toString(), `${data[1]}:${imgBlobUrl}`);
