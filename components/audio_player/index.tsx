@@ -1,6 +1,8 @@
 import { useRef, useEffect, useState } from "react";
 import { BsFillPlayFill, BsFillPauseFill, BsMicFill } from "react-icons/bs";
 
+import { formatTime } from "@/app/helpers";
+
 type AudioPlayerProps = {
   url: string;
 };
@@ -11,6 +13,7 @@ function AudioPlayer({ url }: AudioPlayerProps) {
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioProgress, setAudioProgress] = useState(0);
+  const [audioElapsedSeconds, setAudioElapsedSeconds] = useState(0);
 
   useEffect(() => {
     let increment = audioRef.current
@@ -33,6 +36,7 @@ function AudioPlayer({ url }: AudioPlayerProps) {
       ) {
         increment = NORMALIZED_MAX_PLAYER_VALUE - audioProgress;
       }
+      setAudioElapsedSeconds((prev) => prev + 1);
       setAudioProgress((prev) => prev + increment);
     }, 1000); // Update time every second
 
@@ -65,6 +69,7 @@ function AudioPlayer({ url }: AudioPlayerProps) {
           onEnded={() => {
             setTimeout(() => {
               setIsPlaying(false);
+              setAudioElapsedSeconds(0);
             }, 1000);
           }}
           onLoadedMetadata={() => {
@@ -91,7 +96,7 @@ function AudioPlayer({ url }: AudioPlayerProps) {
             <div className="flex flex-col w-full mt-5">
               <div className="h-1 bg-main-background rounded-full" />
               <div className="text-xs pt-1 text-main-background font-sans">
-                00:00
+                {formatTime(audioElapsedSeconds)}
               </div>
             </div>
             {/* Change the left property between 1% and 92% according to the audio progress. */}
