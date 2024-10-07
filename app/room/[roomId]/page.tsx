@@ -25,7 +25,7 @@ function Room({ params }: RoomProps) {
 
   const [imagePreview, setImagePreview] = useState("");
   const [showAudioPreview, setShowAudioPreview] = useState(false);
-  const [audioClip, setAudioClip] = useState("");
+  const [audioClip, setAudioClip] = useState<Blob | null>(null);
   const [textMessage, setTextMessage] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [messages, setMessages] = useState<{ key: string; value: string }[]>(
@@ -71,7 +71,7 @@ function Room({ params }: RoomProps) {
     if (showAudioPreview) {
       socket.emit(`${room}:audioStream`, [audioClip, socket.id]);
       setShowAudioPreview(false);
-      setAudioClip("");
+      setAudioClip(null);
       return;
     }
     if (!!fileInputRef?.current?.files?.length) {

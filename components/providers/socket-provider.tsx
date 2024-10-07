@@ -86,12 +86,12 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     });
 
     socketInstance.on(`${room}:audioStream`, (audioData: Array<any>) => {
-      storeMessage(`${audioData[1]}:audio:${audioData[0]}`);
+      const url = window.URL.createObjectURL(new Blob([audioData[0]]));
+      storeMessage(`${audioData[1]}:audio:${url}`);
     });
 
     socketInstance.on(`${room}:img`, (data: Array<any>) => {
-      const blob = new Blob([data[0]]);
-      const imgBlobUrl = window.URL.createObjectURL(blob);
+      const imgBlobUrl = window.URL.createObjectURL(new Blob([data[0]]));
       storeMessage(`${data[1]}:${imgBlobUrl}`);
     });
 

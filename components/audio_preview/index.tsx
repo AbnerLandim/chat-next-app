@@ -5,7 +5,7 @@ import { BsHourglassSplit } from "react-icons/bs";
 type AudioPreviewProps = {
   isRecording: boolean;
   onCancel: () => void;
-  setAudioClip: (audioClip: string) => void;
+  setAudioClip: (audioClip: Blob | null) => void;
 };
 
 function AudioPreview({
@@ -26,7 +26,7 @@ function AudioPreview({
 
   function handleOnCancel() {
     onCancel();
-    setAudioClip("");
+    setAudioClip(null);
   }
 
   // Request access to the microphone and set up MediaRecorder
@@ -39,15 +39,15 @@ function AudioPreview({
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
 
-      mediaRecorder.addEventListener("dataavailable", function (event) {
-        audioChunks.push(event.data);
+      mediaRecorder.addEventListener("dataavailable", (e) => {
+        audioChunks.push(e.data);
       });
 
-      mediaRecorder.addEventListener("stop", function () {
+      mediaRecorder.addEventListener("stop", () => {
         const audioBlob = new Blob(audioChunks);
         const url = URL.createObjectURL(audioBlob);
         setAudioURL(url);
-        setAudioClip(url);
+        setAudioClip(audioBlob);
         audioChunks = [];
 
         //   socket.emit(`${room}:audioStream`, [base64String, socket.id]);
