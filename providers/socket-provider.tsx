@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { io as ClientIO } from "socket.io-client";
 
 import useSessionStorage from "@/hooks/useSessionStorage";
+import { JOINED_PREFIX, LEFT_PREFIX } from "@/app/constants";
 
 type SocketContextType = {
   socket: any | null;
@@ -77,10 +78,6 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       console.log("Connected to socketInstance server");
     });
 
-    socketInstance.on("message", (data: any) => {
-      storeMessage(data);
-    });
-
     socketInstance.on(room, (data: any) => {
       storeMessage(data);
     });
@@ -96,17 +93,19 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     });
 
     socketInstance.on(`joined:${room}}`, (clientId: string) => {
-      if (socket?.id !== clientId) alert(`${clientId} has joined`);
+      storeMessage(`${String(JOINED_PREFIX)}:${clientId}`);
     });
 
-    socketInstance.on("disconnect", () => {
+    socketInstance.on("disconnect", (clientId: string) => {
+      console.log("🚀 ~ disconnecting clientId:", clientId);
       setIsConnected(false);
-      console.log("Disconnected from socketInstance server");
+      storeMessage(`${String(LEFT_PREFIX)}:${clientId}`);
     });
 
     setSocket(socketInstance);
 
     return () => {
+      // storeMessage(`${String(LEFT_PREFIX)}:${socketInstance.id}`);
       socketInstance.disconnect();
     };
   }, []);

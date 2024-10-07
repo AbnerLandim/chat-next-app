@@ -4,12 +4,12 @@ import { SlEmotsmile, SlMicrophone } from "react-icons/sl";
 import { HiPaperAirplane } from "react-icons/hi2";
 
 import useSessionStorage from "@/hooks/useSessionStorage";
-import { useSocket } from "@/components/providers/socket-provider";
-import Message from "@/components/message";
-import ImagePreviewModal from "@/components/image_preview_modal";
-import EmojiModal from "@/components/emoji_modal";
-import RoomHeader from "@/components/room_header";
-import AudioPreview from "@/components/audio_preview";
+import { useSocket } from "@/providers/socket-provider";
+import Message from "@/app/components/message";
+import ImagePreviewModal from "@/app/components/image_preview_modal";
+import EmojiModal from "@/app/components/emoji_modal";
+import RoomHeader from "@/app/components/room_header";
+import AudioPreview from "@/app/components/audio_preview";
 import { getBinaryFromFile } from "@/app/helpers";
 import { handlePasteItem } from "@/app/room/[roomId]/helpers";
 

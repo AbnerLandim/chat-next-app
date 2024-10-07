@@ -33,34 +33,30 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
     console.log(`Room: ${roomId} => client connected. ID: ${clientId}`);
     socket.broadcast.emit(`joined:${roomId}}`, clientId);
 
-    socket.on("message", (data) => {
-      console.log(`Room: message => Client ${socket.id} said:`, data);
-      io.emit("message", data);
+    socket.on(roomId, (textMessage) => {
+      console.log(`Room: ${roomId} => Client ${socket.id} said:`, textMessage);
+      io.emit(roomId, textMessage);
     });
 
-    socket.on(roomId, (data) => {
-      console.log(`Room: ${roomId} => Client ${socket.id} said:`, data);
-      io.emit(roomId, data);
-    });
-
-    socket.on(`${roomId}:audioStream`, (audioData) => {
+    socket.on(`${roomId}:audioStream`, (audioBuffer) => {
       console.log(
         `Room: ${roomId} => Client ${socket.id} sent an audio clip:`,
-        audioData
+        audioBuffer
       );
-      io.emit(`${roomId}:audioStream`, audioData);
+      io.emit(`${roomId}:audioStream`, audioBuffer);
     });
 
-    socket.on(`${roomId}:img`, (data) => {
+    socket.on(`${roomId}:img`, (imageBuffer) => {
       console.log(
         `Room: ${roomId} => Client ${socket.id} sent an image:`,
-        data
+        imageBuffer
       );
-      io.emit(`${roomId}:img`, data);
+      io.emit(`${roomId}:img`, imageBuffer);
     });
 
     socket.on("disconnect", () => {
-      console.log("client disconnected.");
+      console.log(`client ${socket.id} disconnected.`);
+      socket.broadcast.emit(`left:${roomId}`, socket.id);
     });
   });
 

@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useSocket } from "@/components/providers/socket-provider";
+import { useSocket } from "@/providers/socket-provider";
 
 type RoomHeaderProps = {
   roomId: string;
