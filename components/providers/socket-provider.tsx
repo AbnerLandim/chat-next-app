@@ -38,6 +38,11 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [isConnected, setIsConnected] = useState(false);
   const { setValue } = useSessionStorage();
 
+  function storeMessage(message: string) {
+    setValue(Date.now().toString(), message);
+    window.dispatchEvent(new Event("sessionStorage"));
+  }
+
   useEffect(() => {
     setRoom(getRoomId());
   });
@@ -73,25 +78,21 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     });
 
     socketInstance.on("message", (data: any) => {
-      setValue(Date.now().toString(), data);
-      window.dispatchEvent(new Event("sessionStorage"));
+      storeMessage(data);
     });
 
     socketInstance.on(room, (data: any) => {
-      setValue(Date.now().toString(), data);
-      window.dispatchEvent(new Event("sessionStorage"));
+      storeMessage(data);
     });
 
     socketInstance.on(`${room}:audioStream`, (audioData: Array<any>) => {
-      setValue(Date.now().toString(), `${audioData[1]}:audio:${audioData[0]}`);
-      window.dispatchEvent(new Event("sessionStorage"));
+      storeMessage(`${audioData[1]}:audio:${audioData[0]}`);
     });
 
     socketInstance.on(`${room}:img`, (data: Array<any>) => {
       const blob = new Blob([data[0]]);
       const imgBlobUrl = window.URL.createObjectURL(blob);
-      setValue(Date.now().toString(), `${data[1]}:${imgBlobUrl}`);
-      window.dispatchEvent(new Event("sessionStorage"));
+      storeMessage(`${data[1]}:${imgBlobUrl}`);
     });
 
     socketInstance.on(`joined:${room}}`, (clientId: string) => {

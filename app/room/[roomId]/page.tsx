@@ -9,7 +9,6 @@ import Message from "@/components/message";
 import ImagePreviewModal from "@/components/image_preview_modal";
 import EmojiModal from "@/components/emoji_modal";
 import RoomHeader from "@/components/room_header";
-// import AudioPlayer from "@/components/audio_player";
 import AudioPreview from "@/components/audio_preview";
 import { getBinaryFromFile } from "@/app/helpers";
 import { handlePasteItem } from "@/app/room/[roomId]/helpers";
@@ -129,10 +128,6 @@ function Room({ params }: RoomProps) {
               />
             )}
           </div>
-          {/* <AudioPlayer
-            recordingState={isRecording}
-            setRecordingState={setIsRecording}
-          /> */}
           <audio ref={audioRef} controls={false} />
         </div>
         <div className="rounded-2xl flex flex-col align-center justify-between bg-slate-50 shadow-md">
